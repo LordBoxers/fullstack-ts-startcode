@@ -62,4 +62,32 @@ app.use((err:any, req:Request, res:Response, next:Function) => {
   }
 })
 
+import authMiddleware from "./middleware/basic-auth"
+app.use("/graphql", authMiddleware)
+
+app.use("/graphql", (req, res, next) => {
+  const body = req.body;
+  if (body && body.query && body.query.includes("createFriend")) {
+    console.log("Create")
+    return next();
+  }
+  if (body && body.operationName && body.query.includes("IntrospectionQuery")) {
+    return next();
+  }
+  if (body.query && (body.mutation || body.query)) {
+    return authMiddleware(req, res, next)
+  }
+  next()
+})
+
+
+import { graphqlHTTP } from 'express-graphql';
+import { schema } from './graphql/schema';
+
+app.use('/graphql', graphqlHTTP({
+  schema: schema,
+  graphiql: true,
+}));
+
+
 export default app;
