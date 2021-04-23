@@ -27,9 +27,9 @@ export const resolvers = {
 
     getAllFriends: (root: any, _: any, context: any) => {
       
-      if (!context.credentials.role || context.credentials.role !== "admin") {
+      if (!context.credentials || !context.credentials.role || context.credentials.role !== "admin") {
         throw new ApiError("Not Authorized", 401)
-      }
+      } 
       
       return friendFacade.getAllFriends()
 

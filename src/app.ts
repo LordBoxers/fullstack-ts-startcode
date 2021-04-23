@@ -63,9 +63,9 @@ app.use((err:any, req:Request, res:Response, next:Function) => {
 })
 
 import authMiddleware from "./middleware/basic-auth"
-app.use("/graphql", authMiddleware)
+//app.use("/graphql", authMiddleware)
 
-app.use("/graphql", (req, res, next) => {
+/* app.use("/graphql", (req, res, next) => {
   const body = req.body;
   if (body && body.query && body.query.includes("createFriend")) {
     console.log("Create")
@@ -78,7 +78,7 @@ app.use("/graphql", (req, res, next) => {
     return authMiddleware(req, res, next)
   }
   next()
-})
+}) */
 
 
 import { graphqlHTTP } from 'express-graphql';

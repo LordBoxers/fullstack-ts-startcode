@@ -23,7 +23,7 @@ const typeDefs = `
         """
         getAllFriendsProxy: [Friend]!
 
-        getFriendFromEmail[](input: FriendEmailInput): Friend! 
+        getFriendFromEmail(input: FriendEmailInput): Friend! 
         
     }
     input FriendInput {
