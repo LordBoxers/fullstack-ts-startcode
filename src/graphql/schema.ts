@@ -1,13 +1,19 @@
 import { makeExecutableSchema } from 'graphql-tools';
 import { resolvers } from './resolvers';
 
-const typeDefs = `
+const typeDefs = `#graphql
     type Friend {
         id: ID
         firstName: String
         lastName: String
         email: String
         role: String
+    }
+    type FriendWithPosition {
+        email: String
+        name: String
+        longitude: Float
+        latitude: Float
     }
     """
     Queries available for Friends
@@ -41,6 +47,18 @@ const typeDefs = `
     input FriendEmailInput {
         email: String!
     }
+    input PositionInput {
+        email: String!
+        longitude: Float!
+        latitude: Float!
+    }
+    input NearbyFriendsInput {
+        email: String!
+        longitude: Float!
+        latitude: Float!
+        distance: Float!
+        password: String!
+    }
     type Mutation {
         """
         Allows anyone (non authenticated users) to create a new friend
@@ -50,6 +68,10 @@ const typeDefs = `
         editFriend(input: FriendEditInput): Friend
 
         deleteFriend(input: FriendEmailInput): Boolean
+
+        addPosition(input: PositionInput): Boolean
+
+        findNearbyFriends(input: NearbyFriendsInput): FriendWithPosition
        
     }
 `;

@@ -3,11 +3,31 @@ import { IFriend } from '../interfaces/IFriend';
 import { ApiError } from '../errors/errors';
 import { Request } from "express";
 import fetch from "node-fetch"
+import PositionFacade from '../facades/PositionFacade';
+import FriendsFacade from '../facades/friendFacade';
 
 // https://www.graphql-tools.com/docs/resolvers/
-
+interface IPositionInput {
+  email: string
+  longitude: number
+  latitude: number
+}
+interface INearbyFriendInput {
+  email: string
+  longitude: number
+  latitude: number
+  distance: number
+  password?: string
+}
+interface IFriendPosition {
+  email: string
+  name: string
+  longitude: number
+  latitude: number
+}
 
 let friendFacade: FriendFacade;
+let positionFacade: PositionFacade;
 
 /*
 We don't have access to app or the Router so we need to set up the facade in another way
@@ -18,6 +38,9 @@ Just before the line where you start the server
 export function setupFacade(db: any) {
   if (!friendFacade) {
     friendFacade = new FriendFacade(db)
+  }
+  if (!positionFacade) {
+    positionFacade = new PositionFacade(db)
   }
 }
 
@@ -63,6 +86,28 @@ export const resolvers = {
     },
     deleteFriend: async (_: object, { input }: { input: IFriend }) => {
         return friendFacade.deleteFriend(input.email)
+    },
+    addPosition: async (_: object, { input }: { input: IPositionInput}) => {
+      try {
+        await positionFacade.addOrUpdatePosition(input.email, input.latitude, input.longitude)
+        return true;
+      } catch (err) {
+        return false;
+      }
+    },
+    findNearbyFriends: async (_: object, { input }: { input: INearbyFriendInput}) => {
+      const nFriends = await positionFacade.findNearbyFriends(input.email, input.longitude, input.latitude, input.distance, input.password)
+      let newArr:any = []
+      nFriends.forEach(f => {
+        const friendToArr: IFriendPosition = {
+          email: f.email,
+          name: f.name,
+          longitude: f.location.coordinates[0],
+          latitude: f.location.coordinates[1]
+        }
+        newArr.push(friendToArr)
+      })
+      return newArr
     },
   },
 };
